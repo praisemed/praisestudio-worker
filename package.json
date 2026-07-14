@@ -1,0 +1,17 @@
+{
+  "name": "praisestudio-worker",
+  "version": "1.0.0",
+  "description": "Video processing worker for PraiseStudio (yt-dlp, ffmpeg, Whisper)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "@supabase/supabase-js": "^2.45.0",
+    "node-fetch": "^3.3.2",
+    "dotenv": "^16.4.5",
+    "uuid": "^9.0.1"
+  }
+}
