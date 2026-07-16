@@ -103,7 +103,19 @@ app.post("/dispatch-download", async (req, res) => {
       await reportStatus(callbackUrl, callbackSecret, jobId, "processing", { progress: 10 });
 
       const cmd = `yt-dlp -f "bestvideo[height<=${quality}]+bestaudio/best" --merge-output-format ${format} -o "${outPath}" "${url}"`;
-      await execAsync(cmd, { maxBuffer: 1024 * 1024 * 50 });
+      console.log(`[job ${jobId}] running: ${cmd}`);
+      try {
+        const { stdout, stderr } = await execAsync(cmd, {
+          maxBuffer: 1024 * 1024 * 50,
+          timeout: 5 * 60 * 1000, // fail after 5 minutes instead of hanging forever
+        });
+        console.log(`[job ${jobId}] yt-dlp stdout:`, stdout?.slice(-2000));
+        if (stderr) console.log(`[job ${jobId}] yt-dlp stderr:`, stderr?.slice(-2000));
+      } catch (execErr) {
+        console.error(`[job ${jobId}] yt-dlp failed. stdout:`, execErr.stdout?.slice(-2000));
+        console.error(`[job ${jobId}] yt-dlp failed. stderr:`, execErr.stderr?.slice(-2000));
+        throw execErr;
+      }
 
       await reportStatus(callbackUrl, callbackSecret, jobId, "processing", { progress: 70 });
       await uploadResultToLovable(callbackUrl, callbackSecret, jobId, "raw-uploads", `${jobId}.${format}`, outPath);
