@@ -26,6 +26,7 @@ async function reportStatus(callbackUrl, callbackSecret, jobId, status, extra = 
     console.log(`[job ${jobId}] ${status}`, extra);
     return;
   }
+  console.log(`[job ${jobId}] reporting "${status}" to callbackUrl: ${callbackUrl}`);
   try {
     await fetch(callbackUrl, {
       method: "POST",
@@ -36,7 +37,7 @@ async function reportStatus(callbackUrl, callbackSecret, jobId, status, extra = 
       body: JSON.stringify({ jobId, status, ...extra }),
     });
   } catch (err) {
-    console.error(`Failed to report status for job ${jobId}:`, err.message);
+    console.error(`Failed to report status for job ${jobId} to ${callbackUrl}:`, err.message, err.cause || "");
   }
 }
 
